@@ -1,4 +1,3 @@
-from Classes import Classes
 from random import randint
 
 #        0     1     2     3     4     5     6     7     8     9     10    11
@@ -51,7 +50,8 @@ for i in range(tam_pop-1):
 #fim
 
 g=0
-print("Geração"+str(g)+"("+str(len(populacao))+"):"+str(populacao))
+
+print("Geração"+str(g)+"("+str(len(populacao))+"):"+str([item[0] for item in populacao]))
 
 # verificando possiveis candidatos
 for i, ind in enumerate(populacao):
@@ -61,31 +61,22 @@ for i, ind in enumerate(populacao):
 
 for k in range(geracoes):
     g=k+1
-    populacao_g=[]
 
     #fazendo elitismo beneficio
+    populacao_e=[]
     maior = [0,0]
     for j,ind in enumerate(populacao):
         if (ind[0][1] <= mochila):
             if(ind[0][0] > maior[0]):
                 maior = ind[0]
                 maior_indice = j
-    populacao_g.append(populacao[maior_indice])
+    populacao_e.append(populacao[maior_indice])
+    print("Elite: "+str(populacao_e[0]))
     #fim
-
-    #fazendo selecao dos melhores
-    for ind in populacao[1:]:
-        tx_infactibilidade=1
-        if (ind[0][1] > mochila):
-            tx_infactibilidade = mochila/ind[0][1]
-        selecao = ind[0][0]/populacao[0][0][0]*100*tx_selecao*tx_infactibilidade
-        if randint(0, 99) <= selecao:
-            populacao_g.append(ind)
-    print("Selecao"+str(g)+"("+str(len(populacao_g))+"):"+str(populacao_g))
-    #fim
-
+    '''
     #fazendo cruzamento
     pais=[]
+    populacao_c=[]
     for ind in populacao[1:]:
         tx_infactibilidade=1
         if (ind[0][1] > mochila):
@@ -94,7 +85,7 @@ for k in range(geracoes):
         if randint(0, 99) <= cruzamento:
             pais.append(ind)
         if len(pais) == 2:
-            filhos=pais
+            filhos=pais[:]
             for i in range(int(len(itens)/2)):
                 if (i in filhos[0][1:]):
                     if not (i in filhos[1][1:]):
@@ -114,17 +105,15 @@ for k in range(geracoes):
             for item in filhos[1][1:]:
                 filhos[1][0][0]+=itens[item][0]
                 filhos[1][0][1]+=itens[item][1]
-            populacao_g.append(filhos[0])
-            populacao_g.append(filhos[1])
-            if len(populacao_g)>tam_pop:
-                populacao_g.remove(pais[0])
-                populacao_g.remove(pais[1])
+            populacao_c.append(filhos[0])
+            populacao_c.append(filhos[1])
             pais=[]
-    print("Cruzamento"+str(g)+"("+str(len(populacao_g))+"):"+str(populacao_g))
+    print("Cruzamento"+str(g)+"("+str(len(populacao_c))+"):"+str([item[0] for item in populacao_c]))
     #fim
-
+  '''
     #fazendo mutação
-    for ind in populacao_g[1:]:
+    populacao_m=[]
+    for ind in populacao_m[1:]:
         if randint(0,99)<= tx_mutacao*100:
             mutante = ind
             for i in range(int(len(itens))):
@@ -138,12 +127,31 @@ for k in range(geracoes):
                 for item in mutante[1:]:
                     mutante[0][0]+=itens[item][0]
                     mutante[0][1]+=itens[item][1]
-            populacao_g.remove(ind)
-            populacao_g.append(mutante)
-    print("Mutacao"+str(g)+"("+str(len(populacao_g))+"):"+str(populacao_g))
+            populacao_m.remove(ind)
+            populacao_m.append(mutante)
+    print("Mutacao"+str(g)+"("+str(len(populacao_m))+"):"+str([item[0] for item in populacao_m]))
     #fim
 
-    populacao=populacao_g
+    populacao=populacao_e[:]+populacao_m[:]
+    '''
+    #fazendo selecao dos melhores
+    populacao_s=[]
+    for ind in populacao[1:]:
+        tx_infactibilidade=1
+        if (ind[0][1] > mochila):
+            tx_infactibilidade = mochila/ind[0][1]
+        selecao = ind[0][0]/populacao[0][0][0]*100*tx_selecao*tx_infactibilidade
+        if randint(0, 99) <= selecao:
+            populacao_s.append(ind)
+    pior=[0,0]
+    while len(populacao_c)>tam_pop:
+      for i,ind in enumerate(populacao):
+        if (item[0] < pior[0]):
+          pior = item
+          pior_indice = i
+        populacao.remove(pior)
+    print("Selecao"+str(g)+"("+str(len(populacao_s))+"):"+str([item[0] for item in populacao_s]))
+    #fim
 
     # gerando o restante da populacao
     while len(populacao)<tam_pop:
@@ -155,11 +163,11 @@ for k in range(geracoes):
                 individuo[0][1] += item[1]
         populacao.append(individuo)
     # fim
-
-    print("Geração"+str(g)+"("+str(len(populacao))+"):"+str(populacao))
+    '''
+    print("Geração"+str(g)+"("+str(len(populacao))+"):"+str([item[0] for item in populacao]))
 
     #verificando possiveis candidatos
     for i,ind in enumerate(populacao):
         if ind[0][1] <= mochila:
             print(i+1, ind[0], ind[1:])
-    #fim
+#fim
