@@ -102,12 +102,12 @@ def cruzamento (populacao, itens, tx_cruzamento):
                 filhos[1][1:] = sorted(filhos[1][1:])
                 filhos[0][0]=[0,0]
                 filhos[1][0]=[0,0]
-            for item in filhos[0][1:]:
-                filhos[0][0][0]+=itens[item][0]
-                filhos[0][0][1]+=itens[item][1]
-            for item in filhos[1][1:]:
-                filhos[1][0][0]+=itens[item][0]
-                filhos[1][0][1]+=itens[item][1]
+                for item in filhos[0][1:]:
+                    filhos[0][0][0]+=itens[item][0]
+                    filhos[0][0][1]+=itens[item][1]
+                for item in filhos[1][1:]:
+                    filhos[1][0][0]+=itens[item][0]
+                    filhos[1][0][1]+=itens[item][1]
                 populacao_c.append(deepcopy(filhos[0]))
                 populacao_c.append(deepcopy(filhos[1]))
             populacao_c.append(deepcopy(pais[0]))
@@ -120,10 +120,10 @@ def cruzamento (populacao, itens, tx_cruzamento):
 
 #fazendo mutacao
 def mutacao(populacao, itens, tx_mutacao):
-    populacao_m = deepcopy(populacao)
-    for ind in populacao_m[1:]:
+    populacao_m = []
+    for ind in populacao:
         if randint(0, 99) <= tx_mutacao * 100:
-            mutante = ind
+            mutante = deepcopy(ind)
             for i in range(int(len(itens))):
                 if randint(0, 99) <= tx_mutacao * 100:
                     if i in mutante:
@@ -135,7 +135,27 @@ def mutacao(populacao, itens, tx_mutacao):
                 for item in mutante[1:]:
                     mutante[0][0] += itens[item][0]
                     mutante[0][1] += itens[item][1]
-            populacao_m.remove(ind)
-            populacao_m.append(mutante)
+            populacao_m.append(deepcopy(mutante))
+        else:
+            populacao_m.append(deepcopy(ind))
     return populacao_m
+#fim
+
+#fazendo selecao dos melhores
+def selecao(populacao, mochila, tx_selecao, tam_pop):
+    populacao_s=[]
+    while len(populacao_s)<tam_pop-1:
+        maior = [0, 0]
+        maior_indice=0
+        for i, ind in enumerate(populacao):
+            if (ind[0][0] > maior[0]):
+                maior = ind[0]
+                maior_indice = i
+        tx_infactibilidade=1
+        if (ind[0][1] > mochila):
+            tx_infactibilidade = mochila/ind[0][1]
+        selecao = ind[0][0]/populacao[0][0][0]*100*tx_selecao*tx_infactibilidade
+        if randint(0, 99) <= selecao:
+            populacao_s.append(deepcopy(populacao[maior_indice]))
+            populacao.remove(ind)
 #fim
