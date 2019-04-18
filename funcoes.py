@@ -142,33 +142,40 @@ def mutacao (populacao, itens, tx_mutacao):
     return populacao_m
 # fim
 
-# fazendo competicao 1x1
+# fazendo competicao roleta x2
 def selecao (populacao, mochila, tam_pop):
     populacao_s = []
-    soma=0
+    valor_total = 0
+    peso_total = 0
+    valor_acumulado = 0
     for ind in populacao:
-        soma += ind[0][0]
-
+        valor_total += ind[0][0]
+        peso_total += ind[0][1]
     for ind in populacao:
-        ind[0].append(0)
-
+        tx_infactibilidade = 1
+        if (ind[0][1] > mochila):
+            tx_infactibilidade = mochila / ind[0][1]
+        ind[0].append(int((100*ind[0][0] / valor_total * tx_infactibilidade) + valor_acumulado))
+        valor_acumulado += int(100*ind[0][0] / valor_total * tx_infactibilidade)
+    populacao_s.append(populacao[0])
     while len(populacao_s) < tam_pop:
-        maior = [0, 0]
-        maior_indice = 0
-        for i, ind in enumerate(populacao):
-            if ind[0][2] == 0:
-                if (ind[0][0] > maior[0]):
-                    maior = ind[0]
-                    maior_indice = i
-                tx_infactibilidade = 1
-                if (ind[0][1] > mochila):
-                    tx_infactibilidade = mochila / ind[0][1]
-                selecao = ind[0][0] / populacao [0][0][0] * 100 * tx_infactibilidade
-                ind[0][2]=1
-        if randint(0, 99) <= selecao:
-            populacao_s.append(deepcopy(populacao[maior_indice]))
-
-    for ind in populacao_s:
+        vitorioso1 = int(randint(0, int(valor_acumulado)))
+        vitorioso2 = int(vitorioso1+int(valor_acumulado)/2)
+        if vitorioso2 > valor_acumulado:
+            vitorioso2 -= valor_acumulado
+        for ind in populacao:
+            if (vitorioso1 != 0):
+                if ind[0][2] >= vitorioso1:
+                    populacao_s.append(ind)
+                    vitorioso1 = 0
+            if (vitorioso2 != 0):
+                if ind[0][2] >= vitorioso2:
+                    populacao_s.append(ind)
+                    vitorioso2 = 0
+    while len(populacao_s) > tam_pop:
+        populacao_s.pop()
+    for i, ind in enumerate(populacao):
         ind[0].pop()
+
     return populacao_s
 # fim
