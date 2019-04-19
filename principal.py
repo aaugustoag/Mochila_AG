@@ -33,7 +33,6 @@ g=0
 # armazenando possiveis candidatos
 dispersao.append(funcoes.verifica_candidatos(populacao, mochila))
 convergencia.append(max(funcoes.verifica_candidatos(populacao, mochila)))
-geracoes.append(g)
 # fim
 
 for g in range(qde_geracoes):
@@ -55,7 +54,6 @@ for g in range(qde_geracoes):
     if g%10 == 0:
         dispersao.append(funcoes.verifica_candidatos(populacao, mochila))
     convergencia.append(max(funcoes.verifica_candidatos(populacao, mochila)))
-    geracoes.append(g)
     # fim
 
 print("Melhor Solução: " + str(funcoes.elitismo(populacao, mochila)[0]))
@@ -70,7 +68,7 @@ bp = ax.boxplot(dispersao)
 
 # plota curva de convergencia
 fig = plt.figure(2, figsize=(12, 6))
-plt.plot(geracoes, convergencia)
+plt.plot(convergencia)
 plt.xlabel("Geracoes")
 plt.ylabel("Melhor Resultado")
 plt.show()
