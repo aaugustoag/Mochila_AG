@@ -52,7 +52,8 @@ for g in range(qde_geracoes):
     #funcoes.imprime_geracao(populacao, g+1)
 
     # armazenando possiveis candidatos
-    dispersao.append(funcoes.verifica_candidatos(populacao, mochila))
+    if g%10 == 0:
+        dispersao.append(funcoes.verifica_candidatos(populacao, mochila))
     convergencia.append(max(funcoes.verifica_candidatos(populacao, mochila)))
     geracoes.append(g)
     # fim
@@ -62,6 +63,8 @@ print("Melhor Solução: " + str(funcoes.elitismo(populacao, mochila)[0]))
 # plota boxplots das geracoes
 fig = plt.figure(1, figsize=(12, 6))
 ax = fig.add_subplot(111)
+plt.xlabel("Geracoes x 10")
+plt.ylabel("Dispersao")
 bp = ax.boxplot(dispersao)
 # fim
 
