@@ -19,10 +19,11 @@ def imprime_mutacao (populacao, g):
 
 # verificando possiveis candidatos
 def verifica_candidatos (populacao, mochila):
-    print("Possiveis Candidatos:")
+    candidatos = []
     for i, ind in enumerate(populacao):
         if ind[0][1] <= mochila:
-            print((i + 1), (ind[0]), (ind[1:]))
+            candidatos.append(deepcopy(ind[0][0]))
+    return candidatos
 # fim
 
 # gerando individuo guloso
@@ -77,7 +78,6 @@ def elitismo (populacao, mochila):
                 maior_indice = i
     populacao_e.append(deepcopy(populacao[maior_indice]))
     populacao.remove(ind)
-    print("Elite:" + str(populacao_e[0]))
     return populacao_e
 # fim
 
