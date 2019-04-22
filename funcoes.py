@@ -23,6 +23,8 @@ def verifica_candidatos (populacao, mochila):
     for i, ind in enumerate(populacao):
         if ind[0][1] <= mochila:
             candidatos.append(deepcopy(ind[0][0]))
+    if len(candidatos) == 0:
+        return 0
     return candidatos
 # fim
 
@@ -148,33 +150,36 @@ def selecao (populacao, mochila, tam_pop):
     valor_total = 0
     peso_total = 0
     valor_acumulado = 0
+    populacao_s.append(populacao[0])
+
     for ind in populacao:
         valor_total += ind[0][0]
         peso_total += ind[0][1]
+
     for ind in populacao:
-        tx_infactibilidade = 1
+        tx_infactibilidade = peso_total / mochila
         if (ind[0][1] > mochila):
-            tx_infactibilidade = mochila / ind[0][1]
-        ind[0].append(int((100*ind[0][0] / valor_total * tx_infactibilidade) + valor_acumulado))
-        valor_acumulado += int(100*ind[0][0] / valor_total * tx_infactibilidade)
-    populacao_s.append(populacao[0])
-    while len(populacao_s) < tam_pop:
-        vitorioso1 = int(randint(0, int(valor_acumulado)))
-        vitorioso2 = int(vitorioso1+int(valor_acumulado)/2)
-        if vitorioso2 > valor_acumulado:
-            vitorioso2 -= valor_acumulado
+            tx_infactibilidade = tx_infactibilidade / (ind[0][1] - mochila)
+        valor_acumulado += int((valor_total + ind[0][0]) / valor_total * tx_infactibilidade) + 1
+        ind[0].append(valor_acumulado)
+        #print(ind,valor_acumulado)
+
+    roleta = 5
+    while len(populacao_s) < tam_pop-1:
+        vitorioso = [int(randint(0, int(valor_acumulado)))]
+        for i in range(roleta-1):
+            vitorioso.append(int(vitorioso[i]+int(valor_acumulado)/roleta))
+            if vitorioso[i+1] > valor_acumulado:
+                vitorioso[i+1] -= valor_acumulado
         for ind in populacao:
-            if (vitorioso1 != 0):
-                if ind[0][2] >= vitorioso1:
-                    populacao_s.append(ind)
-                    vitorioso1 = 0
-            if (vitorioso2 != 0):
-                if ind[0][2] >= vitorioso2:
-                    populacao_s.append(ind)
-                    vitorioso2 = 0
+            for i in range(roleta):
+                if (vitorioso[i] != 0):
+                    if ind[0][2] >= vitorioso[i]:
+                        populacao_s.append(ind)
+                        vitorioso[i] = 0
     while len(populacao_s) > tam_pop:
         populacao_s.pop()
-    for i, ind in enumerate(populacao):
+    for ind in populacao:
         ind[0].pop()
 
     return populacao_s
