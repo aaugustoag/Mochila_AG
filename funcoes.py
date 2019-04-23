@@ -54,17 +54,24 @@ def guloso (itens, mochila):
     for item in itens:
         item.pop()
 
+    print(individuo)
+
     return individuo
 # fim
 
 # gerando individuo aleatorio
-def populacao_aleatoria (itens):
+def populacao_aleatoria (itens, mochila):
     individuo = [[0, 0]]
-    for j, item in enumerate(itens):
-        if randint(0, 1) == 1:
-            individuo.append(j)
-            individuo[0][0] += item[0]
-            individuo[0][1] += item[1]
+    while individuo[0][1] < mochila:
+        item = randint(0, len(itens)-1)
+        if not (item in individuo):
+            individuo.append(item)
+            individuo[0][0] += itens[item][0]
+            individuo[0][1] += itens[item][1]
+    if individuo[0][1] > mochila:
+        individuo.remove(item)
+        individuo[0][0] -= itens[item][0]
+        individuo[0][1] -= itens[item][1]
     return individuo
 # fim
 
@@ -88,9 +95,9 @@ def cruzamento (populacao, itens, tx_cruzamento):
     pais = []
     populacao_c = []
     for ind in populacao:
-        pais.append(ind)
-        if len(pais) == 2:
-            if randint(0, 99) <= tx_cruzamento * 100:
+        if randint(0, 99) <= tx_cruzamento * 100:
+            pais.append(ind)
+            if len(pais) == 2:
                 filhos = deepcopy(pais)
                 for i in range(int(len(itens) / 2)):
                     if (i in filhos[0][1:]):
@@ -101,8 +108,6 @@ def cruzamento (populacao, itens, tx_cruzamento):
                         if (i in filhos[1][1:]):
                             filhos[0].append(i)
                             filhos[1].remove(i)
-                filhos[0][1:] = sorted(filhos[0][1:])
-                filhos[1][1:] = sorted(filhos[1][1:])
                 filhos[0][0] = [0, 0]
                 filhos[1][0] = [0, 0]
                 for item in filhos[0][1:]:
@@ -113,11 +118,13 @@ def cruzamento (populacao, itens, tx_cruzamento):
                     filhos[1][0][1] += itens[item][1]
                 populacao_c.append(deepcopy(filhos[0]))
                 populacao_c.append(deepcopy(filhos[1]))
-            populacao_c.append(deepcopy(pais[0]))
-            populacao_c.append(deepcopy(pais[1]))
-            pais = []
+                populacao_c.append(deepcopy(pais[0]))
+                populacao_c.append(deepcopy(pais[1]))
+                pais = []
+        else:
+            populacao_c.append(deepcopy(ind))
     if len(pais) == 1:
-        populacao_c.append(pais[0])
+        populacao_c.append(deepcopy(pais[0]))
     return populacao_c
 # fim
 
@@ -127,13 +134,12 @@ def mutacao (populacao, itens, tx_mutacao):
     for ind in populacao:
         if randint(0, 99) <= tx_mutacao * 100:
             mutante = deepcopy(ind)
-            for i in range(int(len(itens))):
-                if randint(0, 99) <= tx_mutacao * 100:
-                    if i in mutante:
-                        mutante.remove(i)
-                    else:
-                        mutante.append(i)
-                        mutante[1:] = sorted(mutante[1:])
+            for i in range(int(tx_mutacao*100)):
+                cromossomo = randint(0, len(itens)-1)
+                if cromossomo in mutante:
+                    mutante.remove(cromossomo)
+                else:
+                    mutante.append(cromossomo)
                 mutante[0] = [0, 0]
                 for item in mutante[1:]:
                     mutante[0][0] += itens[item][0]
@@ -144,7 +150,7 @@ def mutacao (populacao, itens, tx_mutacao):
     return populacao_m
 # fim
 
-# fazendo competicao roleta x2
+# fazendo competicao roleta x5
 def selecao (populacao, mochila, tam_pop):
     populacao_s = []
     valor_total = 0
@@ -153,16 +159,18 @@ def selecao (populacao, mochila, tam_pop):
     populacao_s.append(populacao[0])
 
     for ind in populacao:
+        if ind[0][0] == 0:
+            populacao.remove(ind)
         valor_total += ind[0][0]
         peso_total += ind[0][1]
 
     for ind in populacao:
-        tx_infactibilidade = peso_total / mochila
-        if (ind[0][1] > mochila):
-            tx_infactibilidade = tx_infactibilidade / (ind[0][1] - mochila)
-        valor_acumulado += int((valor_total + ind[0][0]) / valor_total * tx_infactibilidade) + 1
+        tx_infactibilidade = 1
+        if ind[0][1] > mochila:
+            tx_infactibilidade = mochila / ind[0][1]
+        valor_acumulado += int(ind[0][0]/valor_total)
         ind[0].append(valor_acumulado)
-        #print(ind,valor_acumulado)
+    print(valor_total,valor_acumulado)
 
     roleta = 5
     while len(populacao_s) < tam_pop-1:

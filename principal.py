@@ -7,7 +7,7 @@ from copy import deepcopy
 
 itens=[]
 
-arq = open('/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/KNAPDATA100000.TXT', 'r')
+arq = open('/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/KNAPDATA40.TXT', 'r')
 texto = arq.readlines()
 mochila = int(texto[0])
 for linha in texto[2:]:
@@ -16,7 +16,7 @@ for linha in texto[2:]:
     itens.append([int(linha_split[2]),int(linha_split[1])])
 arq.close()
 
-tam_pop=33
+tam_pop=20
 qde_geracoes=100
 tx_mutacao=0.2
 tx_cruzamento=0.9
@@ -29,12 +29,12 @@ convergencia=[]
 geracoes=[]
 
 #gerando melhor individuo com guloso
-#populacao.append(funcoes.guloso(itens,mochila))
+populacao.append(funcoes.guloso(itens,mochila))
 #fim
 
 #gerando o restante da populacao inicial
 for i in range(tam_pop):
-    populacao.append(funcoes.populacao_aleatoria(itens))
+    populacao.append(funcoes.populacao_aleatoria(itens,mochila))
 #fim
 
 g=0
