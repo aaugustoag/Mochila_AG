@@ -53,9 +53,6 @@ def guloso (itens, mochila):
 
     for item in itens:
         item.pop()
-
-    print(individuo)
-
     return individuo
 # fim
 
@@ -134,7 +131,7 @@ def mutacao (populacao, itens, tx_mutacao):
     for ind in populacao:
         if randint(0, 99) <= tx_mutacao * 100:
             mutante = deepcopy(ind)
-            for i in range(int(tx_mutacao*100)):
+            for i in range(int(len(itens)/5)):
                 cromossomo = randint(0, len(itens)-1)
                 if cromossomo in mutante:
                     mutante.remove(cromossomo)
@@ -157,18 +154,21 @@ def selecao (populacao, mochila, tam_pop):
     peso_total = 0
     valor_acumulado = 0
     populacao_s.append(populacao[0])
+    maior_v = 0
+    maior_p = 0
 
     for ind in populacao:
         if ind[0][0] == 0:
             populacao.remove(ind)
         valor_total += ind[0][0]
         peso_total += ind[0][1]
+        if ind[0][0] > maior_v:
+            maior_v = ind[0][0]
+        if ind[0][1] > maior_p:
+            maior_p = ind[0][1]
 
     for ind in populacao:
-        tx_infactibilidade = 1
-        if ind[0][1] > mochila:
-            tx_infactibilidade = mochila / ind[0][1]
-        valor_acumulado += int(ind[0][0]/valor_total)
+        valor_acumulado += int(ind[0][0] + maior_v * maior_p - maior_v * (ind[0][1] - mochila))
         ind[0].append(valor_acumulado)
     print(valor_total,valor_acumulado)
 

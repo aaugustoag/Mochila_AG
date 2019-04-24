@@ -7,7 +7,31 @@ from copy import deepcopy
 
 itens=[]
 
-arq = open('/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/KNAPDATA40.TXT', 'r')
+instancia = input('Selecione a instancia:\n1- 40 itens:\n2- 100 itens:\n3- 10.000 itens:\n4- 10.000-2 itens:\n5- 11.000 itens:\n6- 100.000 iten:\n')
+
+instancia = int(instancia)
+
+if instancia == 1:
+    print("Arquivo KNAPDATA40.TXT selecionado")
+    arq = open('KNAPDATA40.TXT', 'r')
+elif instancia == 2:
+    print("Arquivo KNAPDATA100.TXT selecionado")
+    arq = open('KNAPDATA100.TXT', 'r')
+elif instancia == 3:
+    print("Arquivo KNAPDATA10000.TXT selecionado")
+    arq = open('KNAPDATA10000.TXT', 'r')
+elif instancia == 4:
+    print("Arquivo KNAPDATA10000_2.TXT selecionado")
+    arq = open('KNAPDATA10000_2.TXT', 'r')
+elif instancia == 5:
+    print("Arquivo KNAPDATA11000.TXT selecionado")
+    arq = open('KNAPDATA11000.TXT', 'r')
+elif instancia == 6:
+    print("Arquivo KNAPDATA100000.TXT selecionado")
+    arq = open('KNAPDATA100000.TXT', 'r')
+else:
+    exit()
+
 texto = arq.readlines()
 mochila = int(texto[0])
 for linha in texto[2:]:
@@ -16,10 +40,10 @@ for linha in texto[2:]:
     itens.append([int(linha_split[2]),int(linha_split[1])])
 arq.close()
 
-tam_pop=20
+tam_pop=10
 qde_geracoes=100
 tx_mutacao=0.2
-tx_cruzamento=0.9
+tx_cruzamento=0.8
 
 populacao=[]
 individuo=[[0,0]]
@@ -79,7 +103,6 @@ plt.xlabel("Geracoes x 10")
 plt.ylabel("Dispersao")
 bp = ax.boxplot(dispersao)
 # fim
-
 # plota curva de convergencia
 fig = plt.figure(2, figsize=(12, 6))
 plt.plot(convergencia)
