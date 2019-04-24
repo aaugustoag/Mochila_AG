@@ -7,13 +7,14 @@ from copy import deepcopy
 
 itens=[]
 
-instancia = input('Selecione a instancia:\n1- 40 itens:\n2- 100 itens:\n3- 10.000 itens:\n4- 10.000-2 itens:\n5- 11.000 itens:\n6- 100.000 iten:\n')
+#instancia = input('Selecione a instancia:\n1- 40 itens:\n2- 100 itens:\n3- 10.000 itens:\n4- 10.000-2 itens:\n5- 11.000 itens:\n6- 100.000 iten:\n')
 
-instancia = int(instancia)
+#instancia = int(instancia)
+instancia = 1
 
 if instancia == 1:
     print("Arquivo KNAPDATA40.TXT selecionado")
-    arq = open('KNAPDATA40.TXT', 'r')
+    arq = open('/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/KNAPDATA40.TXT', 'r')
 elif instancia == 2:
     print("Arquivo KNAPDATA100.TXT selecionado")
     arq = open('KNAPDATA100.TXT', 'r')
@@ -40,10 +41,10 @@ for linha in texto[2:]:
     itens.append([int(linha_split[2]),int(linha_split[1])])
 arq.close()
 
-tam_pop=10
+tam_pop=20
 qde_geracoes=100
-tx_mutacao=0.2
-tx_cruzamento=0.8
+tx_mutacao=0.1
+tx_cruzamento=0.7
 
 populacao=[]
 individuo=[[0,0]]

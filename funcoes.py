@@ -100,19 +100,19 @@ def cruzamento (populacao, itens, tx_cruzamento):
                     if (i in filhos[0][1:]):
                         if not (i in filhos[1][1:]):
                             filhos[1].append(i)
+                            filhos[1][0][0] += itens[i][0]
+                            filhos[1][0][1] += itens[i][1]
                             filhos[0].remove(i)
+                            filhos[0][0][0] -= itens[i][0]
+                            filhos[0][0][1] -= itens[i][1]
                     else:
                         if (i in filhos[1][1:]):
                             filhos[0].append(i)
+                            filhos[0][0][0] += itens[i][0]
+                            filhos[0][0][1] += itens[i][1]
                             filhos[1].remove(i)
-                filhos[0][0] = [0, 0]
-                filhos[1][0] = [0, 0]
-                for item in filhos[0][1:]:
-                    filhos[0][0][0] += itens[item][0]
-                    filhos[0][0][1] += itens[item][1]
-                for item in filhos[1][1:]:
-                    filhos[1][0][0] += itens[item][0]
-                    filhos[1][0][1] += itens[item][1]
+                            filhos[1][0][0] -= itens[i][0]
+                            filhos[1][0][1] -= itens[i][1]
                 populacao_c.append(deepcopy(filhos[0]))
                 populacao_c.append(deepcopy(filhos[1]))
                 populacao_c.append(deepcopy(pais[0]))
@@ -122,6 +122,9 @@ def cruzamento (populacao, itens, tx_cruzamento):
             populacao_c.append(deepcopy(ind))
     if len(pais) == 1:
         populacao_c.append(deepcopy(pais[0]))
+
+    populacao_c = sorted(populacao_c, reverse=True)
+
     return populacao_c
 # fim
 
@@ -135,15 +138,18 @@ def mutacao (populacao, itens, tx_mutacao):
                 cromossomo = randint(0, len(itens)-1)
                 if cromossomo in mutante:
                     mutante.remove(cromossomo)
+                    mutante[0][0] -= itens[cromossomo][0]
+                    mutante[0][1] -= itens[cromossomo][1]
                 else:
                     mutante.append(cromossomo)
-                mutante[0] = [0, 0]
-                for item in mutante[1:]:
-                    mutante[0][0] += itens[item][0]
-                    mutante[0][1] += itens[item][1]
+                    mutante[0][0] += itens[cromossomo][0]
+                    mutante[0][1] += itens[cromossomo][1]
             populacao_m.append(deepcopy(mutante))
         else:
             populacao_m.append(deepcopy(ind))
+
+    populacao_m = sorted(populacao_m, reverse=True)
+
     return populacao_m
 # fim
 
@@ -156,6 +162,8 @@ def selecao (populacao, mochila, tam_pop):
     populacao_s.append(populacao[0])
     maior_v = 0
     maior_p = 0
+
+    populacao = sorted(populacao)
 
     for ind in populacao:
         if ind[0][0] == 0:
@@ -189,6 +197,8 @@ def selecao (populacao, mochila, tam_pop):
         populacao_s.pop()
     for ind in populacao:
         ind[0].pop()
+
+    populacao_s = sorted(populacao_s, reverse=True)
 
     return populacao_s
 # fim
