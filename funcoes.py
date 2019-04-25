@@ -89,41 +89,38 @@ def elitismo (populacao, mochila):
 
 # fazendo cruzamento
 def cruzamento (populacao, itens, tx_cruzamento):
-    pais = []
     populacao_c = []
-    for ind in populacao:
+    while len(populacao) > 1:
+        rand = randint(0,len(populacao)-1)
+        populacao_c.append(populacao[rand])
+        populacao_c.append(populacao[(rand+len(populacao))%len(populacao)])
         if randint(0, 99) <= tx_cruzamento * 100:
-            pais.append(ind)
-            if len(pais) == 2:
-                filhos = deepcopy(pais)
-                for i in range(int(len(itens) / 2)):
-                    if (i in filhos[0][1:]):
-                        if not (i in filhos[1][1:]):
-                            filhos[1].append(i)
-                            filhos[1][0][0] += itens[i][0]
-                            filhos[1][0][1] += itens[i][1]
-                            filhos[0].remove(i)
-                            filhos[0][0][0] -= itens[i][0]
-                            filhos[0][0][1] -= itens[i][1]
-                    else:
-                        if (i in filhos[1][1:]):
-                            filhos[0].append(i)
-                            filhos[0][0][0] += itens[i][0]
-                            filhos[0][0][1] += itens[i][1]
-                            filhos[1].remove(i)
-                            filhos[1][0][0] -= itens[i][0]
-                            filhos[1][0][1] -= itens[i][1]
-                populacao_c.append(deepcopy(filhos[0]))
-                populacao_c.append(deepcopy(filhos[1]))
-                populacao_c.append(deepcopy(pais[0]))
-                populacao_c.append(deepcopy(pais[1]))
-                pais = []
-        else:
-            populacao_c.append(deepcopy(ind))
-    if len(pais) == 1:
-        populacao_c.append(deepcopy(pais[0]))
-
-    populacao_c = sorted(populacao_c, reverse=True)
+            filhos = []
+            filhos.append(populacao[rand])
+            filhos.append(populacao[(rand+len(populacao))%len(populacao)])
+            for i in range(int(len(itens) / 2)):
+                if (i in filhos[0][1:]):
+                    if not (i in filhos[1][1:]):
+                        filhos[1].append(i)
+                        filhos[1][0][0] += itens[i][0]
+                        filhos[1][0][1] += itens[i][1]
+                        filhos[0].remove(i)
+                        filhos[0][0][0] -= itens[i][0]
+                        filhos[0][0][1] -= itens[i][1]
+                else:
+                    if (i in filhos[1][1:]):
+                        filhos[0].append(i)
+                        filhos[0][0][0] += itens[i][0]
+                        filhos[0][0][1] += itens[i][1]
+                        filhos[1].remove(i)
+                        filhos[1][0][0] -= itens[i][0]
+                        filhos[1][0][1] -= itens[i][1]
+            populacao_c.append(deepcopy(filhos[0]))
+            populacao_c.append(deepcopy(filhos[1]))
+        populacao.remove(populacao[rand])
+        populacao.remove(populacao[(rand+len(populacao))%len(populacao)])
+    if len(populacao) > 0:
+        populacao_c.append(populacao[0])
 
     return populacao_c
 # fim
@@ -131,24 +128,23 @@ def cruzamento (populacao, itens, tx_cruzamento):
 # fazendo mutacao
 def mutacao (populacao, itens, tx_mutacao):
     populacao_m = []
+    qde_cromossomos = int(len(itens)/5)
     for ind in populacao:
         if randint(0, 99) <= tx_mutacao * 100:
             mutante = deepcopy(ind)
-            for i in range(int(len(itens)/5)):
-                cromossomo = randint(0, len(itens)-1)
-                if cromossomo in mutante:
-                    mutante.remove(cromossomo)
-                    mutante[0][0] -= itens[cromossomo][0]
-                    mutante[0][1] -= itens[cromossomo][1]
+            cromossomo = randint(0, len(itens)-1)
+            for i in range(qde_cromossomos):
+                if int((cromossomo + i * qde_cromossomos) % len(itens)) in mutante:
+                    mutante.remove(int((cromossomo + i * qde_cromossomos) % len(itens)))
+                    mutante[0][0] -= itens[int((cromossomo + i * qde_cromossomos) % len(itens))][0]
+                    mutante[0][1] -= itens[int((cromossomo + i * qde_cromossomos) % len(itens))][1]
                 else:
-                    mutante.append(cromossomo)
-                    mutante[0][0] += itens[cromossomo][0]
-                    mutante[0][1] += itens[cromossomo][1]
+                    mutante.append(int((cromossomo + i * qde_cromossomos) % len(itens)))
+                    mutante[0][0] += itens[int((cromossomo + i * qde_cromossomos) % len(itens))][0]
+                    mutante[0][1] += itens[int((cromossomo + i * qde_cromossomos) % len(itens))][1]
             populacao_m.append(deepcopy(mutante))
         else:
             populacao_m.append(deepcopy(ind))
-
-    populacao_m = sorted(populacao_m, reverse=True)
 
     return populacao_m
 # fim
@@ -175,18 +171,18 @@ def selecao (populacao, mochila, tam_pop):
         if ind[0][1] > maior_p:
             maior_p = ind[0][1]
 
+    #funcao aptidao
     for ind in populacao:
-        valor_acumulado += int(ind[0][0] + maior_v * maior_p - maior_v * (ind[0][1] - mochila))
+        valor_acumulado += int(ind[0][0] - valor_total / ind[0][1] * (ind[0][1] - mochila) + valor_total)
         ind[0].append(valor_acumulado)
-    print(valor_total,valor_acumulado)
+    print(populacao)
 
+    #selecao por roleta de 5
     roleta = 5
     while len(populacao_s) < tam_pop-1:
         vitorioso = [int(randint(0, int(valor_acumulado)))]
         for i in range(roleta-1):
-            vitorioso.append(int(vitorioso[i]+int(valor_acumulado)/roleta))
-            if vitorioso[i+1] > valor_acumulado:
-                vitorioso[i+1] -= valor_acumulado
+            vitorioso.append(vitorioso[i]+int(valor_acumulado)%roleta)
         for ind in populacao:
             for i in range(roleta):
                 if (vitorioso[i] != 0):
@@ -197,6 +193,8 @@ def selecao (populacao, mochila, tam_pop):
         populacao_s.pop()
     for ind in populacao:
         ind[0].pop()
+
+    print(populacao_s)
 
     populacao_s = sorted(populacao_s, reverse=True)
 

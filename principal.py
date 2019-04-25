@@ -14,7 +14,8 @@ instancia = 1
 
 if instancia == 1:
     print("Arquivo KNAPDATA40.TXT selecionado")
-    arq = open('/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/KNAPDATA40.TXT', 'r')
+    #/home/alexandreaag/PycharmProjects/Mochila_AG/Principal/
+    arq = open('KNAPDATA40.TXT', 'r')
 elif instancia == 2:
     print("Arquivo KNAPDATA100.TXT selecionado")
     arq = open('KNAPDATA100.TXT', 'r')
@@ -41,7 +42,7 @@ for linha in texto[2:]:
     itens.append([int(linha_split[2]),int(linha_split[1])])
 arq.close()
 
-tam_pop=20
+tam_pop=100
 qde_geracoes=100
 tx_mutacao=0.1
 tx_cruzamento=0.7
@@ -74,14 +75,12 @@ if funcoes.verifica_candidatos(populacao, mochila) != 0:
 for g in range(qde_geracoes):
 
     populacao_e=funcoes.elitismo(populacao, mochila)
-
     populacao_c=funcoes.cruzamento(populacao,itens,tx_cruzamento)
-    populacao=deepcopy(populacao_e)+deepcopy(populacao_c)
-    funcoes.imprime_cruzamento(populacao, g+1)
-
     populacao_m=funcoes.mutacao(populacao,itens,tx_mutacao)
-    populacao=deepcopy(populacao_e)+deepcopy(populacao_m)
-    funcoes.imprime_mutacao(populacao, g+1)
+
+    populacao=deepcopy(populacao_e)+deepcopy(populacao_c)+deepcopy(populacao_m)
+    #funcoes.imprime_cruzamento(populacao_g, g+1)
+    #funcoes.imprime_mutacao(populacao_m, g+1)
 
     populacao_s=funcoes.selecao(populacao,mochila,tam_pop)
     populacao=deepcopy(populacao_s)
